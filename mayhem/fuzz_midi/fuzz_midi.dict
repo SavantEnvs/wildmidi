@@ -1,0 +1,70 @@
+# libFuzzer dictionary for fuzz_midi (WildMidi_OpenBuffer -> src/f_*.c readers).
+# Standard-MIDI-file structure, plus the magic strings of every sibling format
+# WildMidi_OpenBuffer sniffs for (src/wildmidi_lib.c:parse_midi_buffer), so the
+# fuzzer can reach f_xmidi.c / f_mus.c / f_hmp.c / f_hmi.c / f_smaf.c from an
+# SMF starting corpus. Every token is single-line (a literal newline inside a
+# token makes libFuzzer abort with "ParseDictionaryFile: error in line N").
+
+# ── SMF chunks + header fields ───────────────────────────────────────────────
+mthd="MThd"
+mtrk="MTrk"
+mthd_len6="\x00\x00\x00\x06"
+type0="\x00\x00"
+type1="\x00\x01"
+type2="\x00\x02"
+ntrks_1="\x00\x01"
+ntrks_9="\x00\x09"
+division_480="\x01\xe0"
+division_96="\x00\x60"
+division_smpte="\xe7\x28"
+
+# ── channel voice messages ───────────────────────────────────────────────────
+note_off="\x80"
+note_on="\x90"
+poly_aftertouch="\xa0"
+control_change="\xb0"
+program_change="\xc0"
+channel_pressure="\xd0"
+pitch_bend="\xe0"
+
+# ── system / meta events ─────────────────────────────────────────────────────
+sysex_start="\xf0"
+sysex_escape="\xf7"
+meta="\xff"
+meta_seq_number="\xff\x00\x02"
+meta_text="\xff\x01"
+meta_copyright="\xff\x02"
+meta_track_name="\xff\x03"
+meta_instrument="\xff\x04"
+meta_lyric="\xff\x05"
+meta_marker="\xff\x06"
+meta_cue_point="\xff\x07"
+meta_channel_prefix="\xff\x20\x01"
+meta_port="\xff\x21\x01"
+meta_end_of_track="\xff\x2f\x00"
+meta_set_tempo="\xff\x51\x03"
+meta_smpte_offset="\xff\x54\x05"
+meta_time_signature="\xff\x58\x04\x04\x02\x18\x08"
+meta_key_signature="\xff\x59\x02\x00\x00"
+meta_sequencer_specific="\xff\x7f"
+
+# ── variable-length quantity edges ───────────────────────────────────────────
+vlq_max="\xff\xff\xff\x7f"
+vlq_cont="\x81\x80\x80\x00"
+
+# ── sibling formats reachable via the OpenBuffer format sniffer ──────────────
+magic_mus="MUS\x1a"
+magic_form="FORM"
+chunk_xdir="XDIR"
+chunk_info="INFO"
+chunk_cat="CAT "
+chunk_xmid="XMID"
+chunk_timb="TIMB"
+chunk_rbrn="RBRN"
+chunk_evnt="EVNT"
+magic_hmp="HMIMIDIP"
+magic_hmi="HMI-MIDISONG061595"
+magic_smaf="MMMD"
+chunk_mtr="MTR"
+chunk_mtsq="Mtsq"
+chunk_mspi="MspI"

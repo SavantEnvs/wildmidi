@@ -1,0 +1,53 @@
+# libFuzzer dictionary for fuzz_mus (_WM_mus2midi -> src/mus2mid.c).
+# A DOOM MUS file is a 16-byte header ("MUS\x1a", scoreLen, scoreStart,
+# channels, sec_channels, instrCnt) followed by an instrument table and the
+# score.  Each score event byte packs: bit7 = "last event in group",
+# bits 6-4 = event type, bits 3-0 = channel; a group is terminated by a
+# variable-length delay.  Single-line tokens only.
+
+# ── header ───────────────────────────────────────────────────────────────────
+magic="MUS\x1a"
+score_len_1="\x01\x00"
+score_start_16="\x10\x00"
+score_start_20="\x14\x00"
+channels_0="\x00\x00"
+channels_15="\x0f\x00"
+channels_16="\x10\x00"
+instr_count_0="\x00\x00"
+instr_count_1="\x01\x00"
+whole_header="MUS\x1a\x01\x00\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+
+# ── score events, by type (bits 6-4) ─────────────────────────────────────────
+release_note="\x00"
+play_note="\x10"
+play_note_vel="\x10\x80"
+pitch_bend="\x20"
+system_event="\x30"
+controller="\x40"
+measure_end="\x50"
+score_end="\x60"
+unused_type7="\x70"
+last_release_note="\x80"
+last_play_note="\x90"
+last_pitch_bend="\xa0"
+last_system_event="\xb0"
+last_controller="\xc0"
+last_measure_end="\xd0"
+last_score_end="\xe0"
+
+# ── MUS system events / controller numbers (system_event payload) ────────────
+sys_all_sounds_off="\x0a"
+sys_all_notes_off="\x0b"
+sys_mono="\x0c"
+sys_poly="\x0d"
+sys_reset_all_ctrl="\x0e"
+ctrl_change_instrument="\x00"
+ctrl_bank_select="\x01"
+ctrl_volume="\x03"
+ctrl_pan="\x04"
+ctrl_reverb="\x05"
+
+# ── delay VLQ edges ─────────────────────────────────────────────────────────
+delay_0="\x00"
+delay_max_byte="\x7f"
+delay_cont="\xff\xff\xff\x7f"

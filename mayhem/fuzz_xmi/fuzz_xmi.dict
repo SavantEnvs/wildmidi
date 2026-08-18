@@ -1,0 +1,47 @@
+# libFuzzer dictionary for fuzz_xmi (_WM_xmi2midi -> src/xmi2mid.c).
+# XMIDI is an IFF/FORM container: FORM XDIR { INFO } CAT  XMID { FORM XMID
+# { TIMB RBRN EVNT } ... }.  Tokens are the chunk ids the walker compares
+# against plus the interval/branch event bytes it decodes.  Single-line only.
+
+# ── IFF container ids ────────────────────────────────────────────────────────
+form="FORM"
+cat="CAT "
+xdir="XDIR"
+xmid="XMID"
+info="INFO"
+timb="TIMB"
+rbrn="RBRN"
+evnt="EVNT"
+
+# ── big-endian chunk lengths the walker reads ────────────────────────────────
+len_0="\x00\x00\x00\x00"
+len_1="\x00\x00\x00\x01"
+len_2="\x00\x00\x00\x02"
+len_12="\x00\x00\x00\x0c"
+len_13="\x00\x00\x00\x0d"
+len_huge="\x7f\xff\xff\xff"
+len_max="\xff\xff\xff\xff"
+ntracks_1="\x01\x00"
+
+# ── XMIDI event stream ──────────────────────────────────────────────────────
+# Delay bytes are 0x00-0x7f run-length; status bytes are ordinary MIDI.
+note_on="\x90"
+note_off="\x80"
+control_change="\xb0"
+program_change="\xc0"
+pitch_bend="\xe0"
+sysex="\xf0"
+meta="\xff"
+meta_end_of_track="\xff\x2f\x00"
+meta_tempo="\xff\x51\x03"
+meta_timesig="\xff\x58\x04\x04\x02\x18\x08"
+xmidi_branch_cc="\xb0\x74"
+xmidi_for_loop_cc="\xb0\x76"
+xmidi_next_break_cc="\xb0\x77"
+xmidi_callback_cc="\xb0\x6e"
+delay_max="\x7f"
+delay_run="\x7f\x7f\x7f"
+
+# ── an entire minimal container, for the mutator to splice ───────────────────
+minimal_xdir="FORM\x00\x00\x00\x0dXDIRINFO\x00\x00\x00\x02\x01"
+minimal_track="FORM\x00\x00\x00\x0dXMIDEVNT\x00\x00\x00\x01\x00"

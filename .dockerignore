@@ -1,0 +1,55 @@
+# .dockerignore for the commit-image build (docker build -f mayhem/Dockerfile .).
+#
+# Goal: bake in the FULL repo — including .git history (the grader uses it) and
+# everything the oracle reads (test/, its fixtures such as test/test.mid, and
+# mayhem/) — while dropping local build artifacts so a host-side build cannot
+# leak stale objects/binaries into the image.
+#
+# Upstream ships no .dockerignore, so nothing is being overridden here.
+
+# ── local build trees (mayhem/build.sh writes these; upstream .gitignore also
+#    covers cmake-build*/ and build/) ─────────────────────────────────────────
+cmake-build-fuzz/
+cmake-build-test/
+cmake-build*/
+build/
+build-ci-*/
+.ci-local/
+CMakeCache.txt
+CMakeFiles/
+
+# ── compiled objects / libraries ────────────────────────────────────────────
+*.o
+*.obj
+*.a
+*.so
+*.so.*
+*.dylib
+*.lib
+
+# ── harness binaries + copied dictionaries a host-side build.sh leaves at the
+#    repo root (in the image these are produced fresh under /mayhem) ─────────
+fuzz_midi
+fuzz_xmi
+fuzz_mus
+fuzz_midi-standalone
+fuzz_xmi-standalone
+fuzz_mus-standalone
+fuzz_midi.dict
+fuzz_xmi.dict
+fuzz_mus.dict
+ctrf-report.json
+
+# ── generated config header / pkg-config file ───────────────────────────────
+include/config.h
+wildmidi.pc
+
+# ── zig build output ────────────────────────────────────────────────────────
+zig-out/
+zig-cache/
+.zig-cache/
+
+# ── editor / OS noise ───────────────────────────────────────────────────────
+.DS_Store
+*.swp
+*~
